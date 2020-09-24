@@ -1,0 +1,28 @@
+/**index.wxss**/
+.search{
+  position:fixed; 
+  left: 0;
+  top:0;
+  width:100%;
+  background: #fff;
+}
+.search input{    
+  height:100rpx;
+  line-height: 100rpx;
+  font-size: 50rpx;
+  float:left;
+}
+.search mp-icon{
+float:left;
+  text-align: center;
+      height:100rpx;
+  line-height: 100rpx;
+}
+.top{  
+  height:120rpx;
+}
+.item{
+  padding:10rpx;
+  margin-bottom:20rpx;
+  background:#fff;
+}

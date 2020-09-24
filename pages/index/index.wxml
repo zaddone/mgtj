@@ -1,0 +1,15 @@
+<!--
+<view class="search" style="top:{{top}}px">
+<input wx:if="{{showSearch}}" bindconfirm="searchContent"  auto-focus  placeholder="搜索"  /> 
+  <view class="icon" wx:else bindtap="tapSearchShow" ><mp-icon type="field" icon="search" color="black" size="{{iconSize}}"></mp-icon></view>
+</view>
+-->
+<view class="search"  >
+<mp-icon type="field" icon="search" color="black" size="{{iconSize}}"></mp-icon>
+<input   bindconfirm="searchContent"  auto-focus  placeholder="搜索"  /> 
+</view>
+<view class="top" ></view>
+
+<view class="item" wx:for="{{list}}" wx:key="*this" data-id="{{index}}"  bindtap="chickItem">
+  {{item.Title}}
+</view>

@@ -1,0 +1,15 @@
+.play{
+  float: left;
+  margin: 10rpx;
+  padding:15rpx;
+  background: #f6f6f6;
+  height: 50rpx;
+  font-size: 40rpx;
+  line-height: 50rpx;
+}
+.show{
+    background: #c5c5c5;
+}
+.list{
+  background: white;
+}

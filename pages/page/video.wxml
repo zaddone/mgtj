@@ -1,0 +1,4 @@
+<video style="width:100%;height:{{height}}px" id="myVideo" src="{{autoPlay.u}}"  bindended="next"   controls   autoplay="{{runplay}}"  ></video>
+<scroll-view class="list" scroll-y style="height:{{height}}px" >
+<view class="play {{item.play}}" wx:for="{{db}}" wx:key="*this" data-id="{{index}}"  bindtap="clickPlay" >{{item.n}}</view>
+</scroll-view>
