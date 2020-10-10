@@ -1,0 +1,16 @@
+<image wx:if="{{to}}" webp mode="aspectFill" src="{{to.Imgurl}}" style="width:{{width}}px;height:{{height}}px" class="bg"></image>
+<view class="search" style="top:{{top}}px">
+  <view class="s1" bindtap="tapSearch">
+    <mp-icon class="sea" type="field" icon="search" color="black" size="{{25}}"></mp-icon>
+  </view>
+  <view wx:if="{{weather}}" class="s1 s2" bindtap="tapWeather">
+    <view class="titletag png40 {{weather.w.weather_code}} d02"></view>
+    <view class="t">{{weather.w.degree}}℃</view>
+  </view>
+</view>
+<scroll-view class="back" style="max-height:{{h1}}px;" scroll-y scroll-into-view="{{bottomid}}">
+  <view class="item" wx:for="{{to.Txt}}" wx:key="*this" >
+    <text>{{item}}</text>
+    <mp-icon class="ricon" type="field" icon="more" color="white" size="{{iconSize}}"></mp-icon>
+  </view>
+</scroll-view>

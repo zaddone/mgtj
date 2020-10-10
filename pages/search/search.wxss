@@ -4,7 +4,7 @@
   left: 0;
   top:0;
   width:100%;
-  background: #fff;
+  background-color : #fff;
 }
 .search input{    
   height:100rpx;
@@ -21,8 +21,14 @@ float:left;
 .top{  
   height:120rpx;
 }
+
 .item{
-  padding:10rpx;
-  margin-bottom:20rpx;
+  padding:20rpx;
   background:#fff;
+  margin-top: 35rpx;
+  font-size: 35rpx;
+  line-height:50rpx;
+}
+.ricon{
+  float:right;
 }

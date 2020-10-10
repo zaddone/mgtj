@@ -1,8 +1,11 @@
 {
   "pages": [
-    "pages/index/index",
+    "pages/weather/weather",
+    "pages/index/face",
     "pages/page/video",
-    "pages/page/view"
+    "pages/page/view",
+    "pages/search/search",
+    "pages/weather/map"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -10,6 +13,11 @@
     "navigationBarBackgroundColor": "#F6F6F6",
     "navigationBarTitleText": "米果推荐",
     "navigationBarTextStyle": "black"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于查询本地天气"
+    }
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2"

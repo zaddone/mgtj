@@ -1,0 +1,46 @@
+<view class="container" wx:if="{{weather}}">
+
+  <navigator open-type="navigate" url="/pages/weather/map" bindtap="tapMap">
+    <mp-icon class="left" type="field" icon="location" color="black" size="{{iconSize}}"></mp-icon>
+    <view class="left" style="font-size:29rpx">
+      更换地址
+    </view>
+      </navigator>
+    <view class="observe">
+      <view class="left titletag" style="padding-left:50rpx;padding-right:70rpx">
+        <view class="titletag png40 {{weather.w.weather_code}}"></view>
+        <view class="titletag" style="padding-right:0;font-size:100rpx;font-weight:bold;">{{weather.w.degree}}</view>
+        <view class="titletag u" style="padding-left:0">℃ </view>
+        <view class="titletag u" style="font-weight:normal;">{{weather.tips}} </view>
+      </view>
+    </view>
+
+  <view class="title">
+    逐小时预报
+    <mp-icon type="field" icon="arrow" color="black" size="{{iconSize/2}}"></mp-icon>
+  </view>
+  <scroll-view style="width:{{width}}px;" class="scroll-view_H" scroll-x>
+    <view wx:for="{{weather.hd}}" wx:key="*this" class="scroll-view-item_H ">
+      <view class="titletag u"> {{item.time_tag}}
+        <view class="titletag" style="padding:0;font-size: 35rpx;font-weight:bold;">{{item.update_time}}</view>:00</view>
+      <view class="png40 {{item.weather_code}}"></view>
+      <view>
+        <view class="titletag" style="font-size:35rpx;font-weight:bold;">{{item.degree}}℃</view>{{item.weather}}</view>
+      <view class="titletag">{{item.wind}}</view>
+    </view>
+  </scroll-view>
+  <view class="title">
+    7日天气预报
+    <mp-icon type="field" icon="arrow" color="black" size="{{iconSize/2}}"></mp-icon>
+  </view>
+  <scroll-view style="width:{{width}}px;" class="scroll-view_H" scroll-x>
+    <view class="scroll-view-item_H {{item.today}}" style="" wx:for="{{weather.dayW}}" wx:key="index">
+      <view>{{item.date}}{{item.week}}</view>
+      <view class="png40  d{{item.day_weather_code}}"></view>
+      <view class="png40  n{{item.night_weather_code}}"></view>
+      <view>{{item.max_degree}}/{{item.min_degree}}℃</view>
+    </view>
+  </scroll-view>
+
+
+</view>

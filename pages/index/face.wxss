@@ -1,0 +1,63 @@
+.bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: -1;
+}
+
+.titletag {
+  float: left;
+  padding-left: 10rpx;
+}
+
+.tianqi {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+.s1 {
+  margin-top: 30rpx;
+  border-color: rgba(0, 0, 0, 0.1);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 15rpx;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.s2 {
+  height: 30px;
+}
+
+.t {
+  padding-right: 10rpx;
+  height: 30px;
+  line-height: 30px;
+  float: left;
+}
+
+.search {
+  position: fixed;
+  left: 20rpx;
+  z-index: 0;
+}
+
+.back {
+  position: absolute;
+  color: #fff;
+  width: 100%;
+  bottom: 0;
+  z-index: 100;
+}
+
+.item {
+  padding: 20rpx;
+  background-color: rgba(0, 0, 0, 0.4);
+  margin-top: 35rpx;
+  font-size: 35rpx;
+  line-height: 50rpx;
+}
+
+.ricon {
+  float: right;
+  height: 50rpx;
+}

@@ -1,9 +1,0 @@
-{
-  "usingComponents": {
-    "mp-icon": "../components/icon/icon"   
-  },
-  "backgroundTextStyle":"light",
-  "enablePullDownRefresh":true,
-  "onReachBottomDistance":150
-
-}
