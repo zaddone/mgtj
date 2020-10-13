@@ -55,13 +55,11 @@ Page({
         that.showData(res)
         app.globalData.loc = [res.latitude, res.longitude]
         app.getWeatherWithLoc(res.latitude, res.longitude, function(r) {
-
           console.log(r)
           //app.globalData.weather = r
           wx.setNavigationBarTitle({
             title: r.cityname + ' ' + r.w.weather + r.w.degree + '℃',
           })
-
         })
       }
     })

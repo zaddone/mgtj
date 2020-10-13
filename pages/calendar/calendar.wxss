@@ -1,0 +1,66 @@
+page{
+  background: #fff;
+}
+.cal {
+  width: 100%;
+}
+.day{
+  width:100%;
+  background: linear-gradient(#f6f6f6, #fff);
+}
+.tap{
+    background: rgba(0, 0, 0, 0.1);
+  border-radius: 25rpx;
+}
+.nav {
+  width: 100%;
+  text-align: center;
+  font-size: 50rpx;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.lastMonth {
+  background: linear-gradient(#f6f6f6, #fff);
+}
+
+.nextMonth {
+  background: linear-gradient(#fff, #f6f6f6);
+}
+
+.blacktxt {
+  text-align: center;
+  z-index: -1;
+  color: rgba(0, 0, 0, 0.1);
+  font-size: 350rpx;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  font-weight: bold;
+  padding-top: 100rpx;
+}
+
+.item {
+  width: 14%;
+  float: left;
+  font-size: 35rpx;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.n {
+  font-size: 40rpx;
+}
+
+.nd {
+  font-size: 25rpx;
+}
+
+.hide {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.today {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 25rpx;
+}

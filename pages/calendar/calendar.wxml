@@ -1,0 +1,15 @@
+<view bindtap="last" class="nav lastMonth">︿</view>
+<view class="cal">
+  <view class="blacktxt">{{m}}月</view>
+  <view class="item" wx:for="{{week}}" wx:key="*this">{{item}}</view>
+  <view class="item {{item.hide}} {{item.today}} {{item.tap}}" wx:for="{{li}}" wx:key="*this" bindtap="tapday" data-id="{{index}}">
+    <view class="n">{{item.d}}</view>
+    <view class="nd" wx:if="{{item.other}}"> {{item.other[0]}}</view>
+    <view class="nd" wx:else> {{item.nd}}</view>
+  </view>
+</view>
+<view class="nav nextMonth" bindtap="next">﹀</view>
+<view class="day" wx:if="{{day}}">
+  <view>{{year}}年{{m}}月{{day.d}}日 周{{week[day.w]}} </view>
+  <view>农历{{day.nm}}{{day.nd}} {{day.other}}</view>
+</view>
