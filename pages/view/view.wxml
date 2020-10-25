@@ -1,0 +1,7 @@
+<image mode="aspectFit"  src="{{db.Img[0]}}"></image> 
+<view class="info price">
+<text wx:if="{{db.Coupon}}" class="coupon">有优惠券</text>
+￥{{db.Price}}<text wx:if="{{db.Fprice}}">返{{db.Fprice}}</text><text wx:else>没有返利</text>
+</view>
+<view class="info" >{{db.Name}}<mp-icon bindtap="searchTap" icon="search" color="black" size="{{25}}"></mp-icon></view>
+<button type="primary" wx:if="{{db.Id}}" data-id="{{db.Id}}" style="width:100%"  bindtap="currencyRouter" >点击查看</button>

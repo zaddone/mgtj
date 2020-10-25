@@ -1,11 +1,13 @@
 {
   "pages": [
-    "pages/calendar/calendar",
     "pages/index/face",
+    "pages/search/search",
+    "pages/calendar/calendar",
     "pages/page/video",
     "pages/page/view",
-    "pages/search/search",
     "pages/weather/weather",
+    "pages/view/view",
+    "pages/view/view_taobao",
     "pages/weather/map"
   ],
   "window": {

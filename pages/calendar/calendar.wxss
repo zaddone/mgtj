@@ -1,17 +1,21 @@
-page{
+page {
   background: #fff;
 }
+
 .cal {
   width: 100%;
 }
-.day{
-  width:100%;
+
+.day {
+  width: 100%;
   background: linear-gradient(#f6f6f6, #fff);
 }
-.tap{
-    background: rgba(0, 0, 0, 0.1);
+
+.tap {
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 25rpx;
 }
+
 .nav {
   width: 100%;
   text-align: center;
@@ -48,12 +52,30 @@ page{
   margin-bottom: 20rpx;
 }
 
+.title {
+  padding-left: 20rpx;
+  font-size: 33rpx;
+}
+
+.tag {
+  font-size: 30rpx;
+  float: left;
+  border-radius: 25rpx;
+  padding: 10rpx;
+  margin-left: 20rpx;
+  margin-top: 20rpx;
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .n {
   font-size: 40rpx;
 }
 
 .nd {
   font-size: 25rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .hide {

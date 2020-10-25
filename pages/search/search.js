@@ -1,12 +1,91 @@
 //index.js
 const app = getApp()
 Page({
+  limit: 5,
+  maxLimit: 50,
+  mainList: [],
   data: {
-    list: []
+    focus: false,
+
   },
   begin: 0,
   end: 0,
-  onShow(e) {
+  closeInput(e) {
+    console.log(e)
+    this.setData({
+      key: '',
+      focus: true
+    })
+  },
+
+  showContent() {
+    if (!this.mainList || this.mainList.length == 0) return
+    if (!this.data.list) this.data.list = []
+    let that = this
+
+    for (let i = 0; i < this.limit; i++) {
+      if (this.mainList.length == 0) {
+        let k = setTimeout(
+          function() {
+            that.showContent()
+            clearTimeout(k)
+          }, 2000)
+        break
+      }
+      app.getContent(this.mainList.shift(), function(db) {
+        let par = db.parentId
+        if (par) {
+          if (!app.globalData.content[par]) {
+            that.mainList.unshift(par)
+            that.mainList = Array.from(new Set(that.mainList))
+          }
+        }
+        app.getLink(db._id, function(list) {
+          console.log(list)
+          db.link = list
+          list.forEach(function(_l) {
+            //console.log(_l)
+            if (!app.globalData.content[_l]) {
+              that.mainList.unshift(_l)
+              that.mainList = Array.from(new Set(that.mainList))
+            }
+          })
+          //that.showContent()
+        })
+        //console.log(db)
+        let remark = ''
+        if (db.Type == 1) {
+          for (let s of db.Content.split(/\n/)) {
+            if (/\!?\[[^\]]*\]\([^)]*\)/.test(s)) continue
+            if (s.length == 0) continue
+            remark += s.replace(/[^\w\u3007\u3400-\u4DB5\u4E00-\u9FCB\uE815-\uE864]+/, '')
+            if (remark.length > 100) {
+              remark = remark.substr(0, 100) + "......"
+              break
+            } else {
+              remark += ' '
+            }
+          }
+        }
+        that.data.list.push({
+          Title: db.Title,
+          _id: db._id,
+          remark: remark,
+          Type: db.Type
+        })
+        let x = that.data.list.length > that.maxLimit
+        if (x > 0) {
+          that.data.list = that.data.list.slice(x)
+        }
+        that.setData({
+          list: that.data.list
+        })
+      })
+    }
+  },
+
+
+  onShow() {
     let sinfo = wx.getSystemInfoSync()
     console.log(sinfo)
     let rate = sinfo.screenWidth / 750
@@ -17,144 +96,81 @@ Page({
       topd: t + rate * 100,
     })
   },
-  onLoad: function (e) {
-    this.limit = 15;
-    this.maxLimit = 150
-    this.showHistory()
 
+  onLoad: function(e) {
+    if (e.q) {
+      this.search(e.q)
+    } else {
+      this.showHistory()
+    }
     //console.log(Array.from(new Set([1,8,2,8,1])))
   },
   showHistory() {
     let that = this
-    app.getHistorage(function (db) {
-      //console.log(db)
-      that.listWithId = db
-      that.getNextPage()
+    app.getHistorage(function(db) {
+      console.log(db)
+      that.mainList = db
+      that.showContent()
+      //that.getNextPage()
+    })
+  },
+  search(key) {
+
+    this.setData({
+      key: key,
+      list: [],
+    })
+    app.globalData.content = {}
+    let that = this
+    app.reqWords(app.getSearchKey(key), function(li) {
+      //console.log(li)
+      that.mainList = li
+      that.showContent()
     })
   },
   searchContent(event) {
     let key = event.detail.value
     if (!key) return;
-    wx.showLoading({
-      title: '加载中',
-    })
-    let that = this
-    this.begin = 0
-    this.end = 0
-    this.data.list = []
-    this.listWithId = []
-    wx.cloud.callFunction({
-      name: 'searchContent',
-      data: {
-        words: app.getSearchKey(key),
-        limit: that.limit,
-      },
-      success: function (res) {
-        //console.log(res)       
-        wx.hideLoading()
-        if (res.result.length > 0) {
-          that.listWithId = res.result
-          that.getNextPage()
-        } else {
-          wx.showToast({
-            title: '没有找到',
-          })
-          that.showHistory()
-        }
-
-      },
-      fail: function (res) {
-        console.error(res)
-        wx.hideLoading()
-      }
-    })
+    this.search(key)
   },
-  getNextPage() {
-    if (this.data.list.length > this.maxLimit) this.data.list = this.data.list.slice(this.data.list.length - this.maxLimit)
-
-    this.end = this.begin + this.limit
-    if (this.end > this.listWithId.length) this.end = this.listWithId.length
-    let that = this
-    console.log(this.end, this.begin)
-    this.getContent(this.listWithId.slice(this.begin, this.end), function (list) {
-      that.setData({ list: that.data.list.concat(list) })
-    })
-    this.begin = this.end
-  },
-  getPullPage() {
-    if (this.data.list.length > this.maxLimit) this.data.list = this.data.list.slice(0, this.maxLimit)
-
-    this.end = this.begin + this.limit
-    if (this.end > this.listWithId.length) this.end = this.listWithId.length
-    let that = this
-    this.getContent(this.listWithId.slice(this.begin, this.end), function (list) {
-      that.setData({
-        list: list.concat(that.data.list),
-        function() {
-          wx.stopPullDownRefresh()
-        }
-      })
-    })
-    this.begin = this.end
-  },
-  getContent(list, hand) {
-    //console.log(list)    
-    let that = this
-    var [...list2] = list
-    app.db.collection('content').where({
-      _id: app.db.command.in(list2)
-    }).get({
-      success: function (res) {
-        res.data.forEach(function (d) {
-          //
-          list.forEach(function (l, i) {
-            if (d._id == l) list[i] = d
-          })
-          that.listWithId.push(d.parentId)
-        })
-        that.listWithId = Array.from(new Set(that.listWithId))
-        //console.log(list)
-
-        if (hand) hand(list)
-        //else
-        //that.setData({list: that.data.list.concat(list)})
-        //that.setData({ list: list})
-        //console.log(that.data.list)
-        console.log("list", list2)
-        app.db.collection('links').where({
-          _id: app.db.command.in(list2)
-        }).get({
-          success: function (r) {
-            r.data.forEach(function (d) {
-              console.log(d)
-              that.listWithId = that.listWithId.concat(d.link)
-            })
-            that.listWithId = Array.from(new Set(that.listWithId))
-          }
-        })
-      },
-    })
+  moreTap(e) {
+    this.showContent()
   },
   onPullDownRefresh() {
-    //console.log(event)
-    this.getPullPage()
+
   },
   onReachBottom() {
-    //onsole.log(event)
-    this.getNextPage()
+    console.log("bottom")
+    this.moreTap()
   },
   chickItem(e) {
-    //console.log(e)
-    app.setTmpDB(this.data.list[e.currentTarget.dataset.id])
-    //app.globalData.tmpdb = this.data.list[e.currentTarget.dataset.id]
-    //console.log(app.globalData.tmpdb)
-    if (app.globalData.tmpdb.Type == 2) {
-      wx.navigateTo({
-        url: '/pages/page/video',
+    console.log(e)
+    let that = this
+    let db = app.globalData.content[e.currentTarget.dataset.id]
+    console.log(db)
+    if (db.parentId) {
+      let par = db.parentId
+      if (!app.globalData.content[par]) {
+        this.mainList.unshift(par)
+        this.mainList = Array.from(new Set(this.mainList))
+      }
+    }
+
+    if (db.link) {
+      db.link.forEach(function(l) {
+        if (!app.globalData.content[l]) {
+          that.mainList.unshift(l)
+          that.mainList = Array.from(new Set(that.mainList))
+        }
       })
-    } else if (app.globalData.tmpdb.Type == 1) {
+    }
+    if (db.Type == 2) {
       wx.navigateTo({
-        url: '/pages/page/view',
+        url: '/pages/page/video?id=' + db._id,
+      })
+    } else if (db.Type == 1) {
+      wx.navigateTo({
+        url: '/pages/page/view?id=' + db._id,
       })
     }
   },

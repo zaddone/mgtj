@@ -11,24 +11,48 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-    
+    let that = this
+    app.getUserInfo(function(info){
+      that.setData({config:info.config})
+    })
+
+    app.getToday(function (db) {
+      if (db.nm ===db.nd ){
+        db.nd = "初一"
+      }
+      if (db.other){
+        db.tag = db.other[0]
+        for (let v of db.other){
+          if (v.search(/节/)!= -1){
+            db.tag = v
+            break
+          }
+          //console.log(v)
+        }
+        if (db.other[0].length==2){
+          db.nj ==db.other[0]
+        }
+      }
+      that.setData({today:db})
+      console.log(db)
+    });
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
-    let that = this
-    app.getTianqi(function (res) {
-      console.log(res)
-      //app.globalData.weather = res
-      that.setData({ weather: res })
-    })
+
   },
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function() {
     let that = this
+    app.getTianqi(function (res) {
+      console.log(res)
+      //app.globalData.weather = res
+      that.setData({ weather: res })
+    })
     let sinfo = wx.getSystemInfoSync()
     let rate = sinfo.screenWidth / 750
     console.log(sinfo)
@@ -42,10 +66,12 @@ Page({
     wx.request({
       url: 'https://www.zaddone.com/site/today',
       success: function (res) {
+        //res.data.Imgurl = res.data.Imgurl.split('?')[0]
+        console.log(res)
         that.setData({
           to: res.data,
         }, function () {
-          console.log(that.data.to.Txt.toString())
+          //console.log(that.data.to.Txt.toString())
         })
       },
     })
@@ -98,6 +124,15 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function() {
-
+    return {
+      title:this.data.to.Txt[0],
+      path: '/pages/index/face'
+    }
+  },
+  onShareTimeline(){
+    return{
+      title: this.data.to.Txt[0],
+      imageUrl: this.data.to.Imgurl
+    }
   }
 })

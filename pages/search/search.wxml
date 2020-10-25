@@ -1,8 +1,15 @@
-<view class="search"  >
+<view class="search">
+
 <mp-icon type="field" icon="search" color="black" size="{{iconSize}}"></mp-icon>
-<input   bindconfirm="searchContent"  auto-focus  placeholder="搜索"  /> 
+<input   bindconfirm="searchContent"  focus="{{focus}}"   placeholder="搜索"  value="{{key}}"  /> 
+<view bindtap="closeInput" class="close" >
+<mp-icon wx:if="{{key}}" type="field" icon="close2" color="black" size="{{iconSize/2}}"  ></mp-icon>
 </view>
-<view class="top" ></view>
-<view class="item" wx:for="{{list}}" wx:key="*this" data-id="{{index}}"  bindtap="chickItem">
-  {{item.Title}}
 </view>
+<view class="top"></view>
+<view class="item" wx:for="{{list}}" wx:key="index"  data-id="{{item._id}}"   bindtap="chickItem">
+  <view class="title">{{item.Title}}</view>
+  <view class="content" wx:if="{{item.remark}}">{{item.remark }}</view>
+  <view class="bot"> </view>
+</view>
+<view wx:if="{{list}}" class="more" bindtap="moreTap">︾</view>

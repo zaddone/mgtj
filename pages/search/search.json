@@ -3,7 +3,7 @@
     "mp-icon": "../components/icon/icon"
   },
   "backgroundTextStyle": "light",
-  "enablePullDownRefresh": true,
-  "onReachBottomDistance": 150,
+  
+  "onReachBottomDistance": 50,
   "pageOrientation": "portrait"
 }

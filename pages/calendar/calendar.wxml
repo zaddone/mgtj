@@ -9,7 +9,14 @@
   </view>
 </view>
 <view class="nav nextMonth" bindtap="next">﹀</view>
-<view class="day" wx:if="{{day}}">
-  <view>{{year}}年{{m}}月{{day.d}}日 周{{week[day.w]}} </view>
-  <view>农历{{day.nm}}{{day.nd}} {{day.other}}</view>
+<view class="day" wx:if="{{day.d}}">
+  <view class="title">{{year}}年{{m}}月{{day.d}}日 周{{week[day.w]}} 农历{{day.ntag}}</view>
+  <block wx:if="{{config.ppt}}">
+  <navigator url="/pages/search/search?q={{item}}"  class="tag" wx:for="{{day.other}}" wx:key="*this">{{item}}</navigator>
+   <navigator url="/pages/search/search?q={{item}}" class="tag" wx:for="{{day.jieri}}" wx:key="*this">{{item}}</navigator>
+   </block>
+   <block wx:else>
+     <view   class="tag" wx:for="{{day.other}}" wx:key="*this">{{item}}</view>
+   <view class="tag" wx:for="{{day.jieri}}" wx:key="*this">{{item}}</view>
+      </block>
 </view>

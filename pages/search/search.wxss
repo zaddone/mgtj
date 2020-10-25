@@ -1,34 +1,76 @@
 /**index.wxss**/
-.search{
-  position:fixed; 
+
+.search {
+  position: fixed;
   left: 0;
-  top:0;
-  width:100%;
-  background-color : #fff;
-}
-.search input{    
-  height:100rpx;
-  line-height: 100rpx;
-  font-size: 50rpx;
-  float:left;
-}
-.search mp-icon{
-float:left;
-  text-align: center;
-      height:100rpx;
-  line-height: 100rpx;
-}
-.top{  
-  height:120rpx;
+  top: 0;
+  width: 100%;
+  background: #f6f6f6;
 }
 
-.item{
-  padding:20rpx;
-  background:#fff;
-  margin-top: 35rpx;
-  font-size: 35rpx;
-  line-height:50rpx;
+.search input {
+  border-radius: 15rpx;
+  border-color: rgba(0, 0, 0, 0.8);
+  border-width: 1rpx;
+  padding-left: 10rpx;
+  width: 80%;
+  background: #fff;
+  height: 100rpx;
+  line-height: 100rpx;
+  font-size: 50rpx;
+  float: left;
 }
-.ricon{
-  float:right;
+
+.search .close {
+  float: left;
+  height: 100rpx;
+  line-height: 100rpx;
+}
+
+.search mp-icon {
+  float: left;
+  text-align: center;
+  height: 100rpx;
+  line-height: 100rpx;
+}
+
+.top {
+  height: 120rpx;
+}
+
+.ricon {
+  float: right;
+}
+
+.bot {
+  bottom: 0;
+  left: 0;
+  height: 50rpx;
+  line-height: 50rpx;
+  text-align: right;
+  background: linear-gradient(#f6f6f6, #fff);
+}
+
+.more {
+  text-align: center;
+  background: linear-gradient(#fff, #f6f6f6);
+}
+
+.item {
+  margin-top: 20rpx;
+  font-size: 35rpx;
+}
+
+.title {
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  font-weight: bold;
+  background: linear-gradient(#fff, #f6f6f6);
+}
+
+.content {
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+  font-size: 30rpx;
+  max-height: 120px;
 }

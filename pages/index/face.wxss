@@ -22,9 +22,6 @@
   border-style: solid;
   border-radius: 15rpx;
   background-color: rgba(255, 255, 255, 0.6);
-}
-
-.s2 {
   height: 30px;
 }
 
@@ -32,6 +29,19 @@
   padding-right: 10rpx;
   height: 30px;
   line-height: 30px;
+  font-size: 33rpx;
+  float: left;
+}
+
+.tag {
+  float: left;
+}
+
+.tc {
+  padding-right: 10rpx;
+  height: 30px;
+  line-height: 30px;
+  font-size: 30rpx;
   float: left;
 }
 

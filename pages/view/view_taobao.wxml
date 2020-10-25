@@ -1,0 +1,18 @@
+<swiper style="height:600rpx" indicator-dots="{{true}}"
+  autoplay="{{true}}"   duration="{{true}}">
+  <block wx:for="{{db.Img}}" wx:key="*this">
+    <swiper-item>
+      <image  mode="aspectFit"  src="{{item}}"></image>      
+    </swiper-item>
+  </block>
+</swiper>
+<view class="info price">
+<text wx:if="{{db.Coupon}}" class="coupon">有优惠券</text>￥{{db.Price}}<text wx:if="{{db.Fprice}}">返{{db.Fprice}}</text><text wx:else>没有返利</text></view> 
+<view class="info">{{db.Name}}<mp-icon bindtap="searchTap" icon="search" color="black" size="{{25}}"></mp-icon></view>
+<view class="info">{{db.Show}}</view>
+<button wx:if="{{db.Ext}}"  type="primary"  style="width:100%" bindtap="taobaoRouter" >点击查看</button>
+<mp-dialog title="复制下面代码" show="{{db.show}}" bindbuttontap="tapDialogButton" buttons="{{db.taobaobutton}}">
+    <view><input cursor-spacing="100" class="weui-input code" maxlength="20" value="{{db.code}}" />
+    <view>打开手机app查看详情</view>
+    </view>
+</mp-dialog>

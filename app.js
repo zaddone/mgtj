@@ -20,13 +20,45 @@ App({
     }
     this.db = wx.cloud.database()
     this.globalData = {
-
-      tmpdb: {}
+      //tmpdb: {},
+      keyWords: [],
+      content: {}
     }
   },
-  getWeatherWithLoc(lat,loc,hand){
+  getToday(hand) {
+    if (this.globalData.today) {
+      if (hand) hand(this.globalData.today)
+      return
+    }
+    //console.log(y, m)
+    let date = new Date;
+    let db = {
+      y: date.getFullYear(),
+      m: date.getMonth() + 1,
+      d: date.getDate(),
+    }
     let that = this
-    that.getCityWithLoc(lat, loc, function (c) {
+    wx.request({
+      url: 'https://www.zaddone.com/calendar/info',
+      data: db,
+      success: function(res) {
+        if (!res.data.msg) return
+        //console.log(res.data.msg)
+        let db_ = res.data.msg.split(',')
+        db.nm = db_[1]
+        db.nd = db_[2]
+        db.w = Week[parseInt(db_[3])]
+        if (db_.length > 4)
+          db.other = db_.slice(4)
+        that.globalData.today = db
+        //console.log(li)
+        if (hand) hand(db)
+      }
+    })
+  },
+  getWeatherWithLoc(lat, loc, hand) {
+    let that = this
+    that.getCityWithLoc(lat, loc, function(c) {
       console.log(c)
       for (let i = c.length - 1; i >= 0; i--) {
         let city = c[i]
@@ -34,7 +66,7 @@ App({
         //console.log(city)
         that.getCityinfo(
           city,
-          function (r) {
+          function(r) {
             //getCityWeather()
             console.log(c, r)
             let p = r[0]
@@ -50,9 +82,9 @@ App({
       }
     })
   },
-  getTianqiWithLoc(hand){
+  getTianqiWithLoc(hand) {
     let that = this
-    if (this.globalData.loc){
+    if (this.globalData.loc) {
       this.getWeatherWithLoc(this.globalData.loc[0], this.globalData.loc[1], hand)
       return
     }
@@ -61,20 +93,20 @@ App({
       success(res) {
         //console.log(res)
         that.globalData.loc = [res.latitude, res.longitude]
-        that.getWeatherWithLoc(res.latitude, res.longitude,hand)
+        that.getWeatherWithLoc(res.latitude, res.longitude, hand)
       }
     })
   },
-  getTianqiWithIP(hand){
+  getTianqiWithIP(hand) {
     let that = this
-    this.getCityWithIp(function (res) {
+    this.getCityWithIp(function(res) {
       let c = res.split(/省|市|县|区|镇/)
       for (let i = c.length - 1; i >= 0; i--) {
         let city = c[i]
         if (city.length == 0) continue
         that.getCityinfo(
           city,
-          function (r) {
+          function(r) {
             //getCityWeather()
             //console.log(r, c)
             let p = r[0]
@@ -94,11 +126,11 @@ App({
     //locationEnabled
     let that = this
     if (wx.authorize({
-      scope: 'scope.userLocationBackground',
+        scope: 'scope.userLocationBackground',
       })) {
       that.getTianqiWithLoc(hand)
       return
-    }else{
+    } else {
       this.getTianqiWithIP(hand)
     }
   },
@@ -111,19 +143,61 @@ App({
       },
     })
   },
+
   getUserInfo(hand) {
+    if (this.globalData.userInfo) {
+      hand(this.globalData.userInfo)
+      return
+    }
+    let that  = this
     wx.cloud.callFunction({
       name: 'userInfo',
       success: function(res) {
+        that.globalData.userInfo = res.result
         hand(res.result)
       },
     })
   },
-  setTmpDB(db) {
-    this.saveContent(db)
-    this.globalData.tmpdb = db
+  getContent(id, hand,fail) {
+    let db = this.globalData.content[id]
+    if (db) {
+      console.log(db.Title)
+      hand(db)
+      return
+    }
+    let that = this
+    this.db.collection('content').doc(id).get().then(res => {
+      res.data.Title = res.data.Title.replace(/_([^_]+)_/, "$1")
+      if (res.data.Type == 1) {
+        res.data.Content = res.data.Content.replace(/_([^_]+)_/, "$1").replace(/\!?\[[^\]]*\]\([^)]*\)/g, function (w) {
+        //console.log(w)
+        if (/svg/.test(w)) return "";
+        if (/^\!/.test(w)) return '';
+        return w
+      })
+       
+      }
+      hand(res.data)
+      this.globalData.content[id] = res.data
+
+      //that.saveContent(res.data)
+    }).catch((e) => {
+      console.log(e)
+      if (fail)fail()
+    });
   },
-  getContent(id, hand) {
+  getLink(id, hand,fail) {
+    this.db.collection('links').doc(id).get().then(res => {
+      console.log(res)
+      if (!res.data.link || res.data.link.length == 0) return
+      hand(res.data.link)
+      //that.saveContent(res.data)
+    }).catch((e) => {
+      console.log(e)
+      if (fail)fail()
+    });
+  },
+  getContent_(id, hand) {
     let that = this
     let db = wx.getStorage({
       key: id,
@@ -155,6 +229,29 @@ App({
       },
     })
   },
+  setHistorage(id) {
+    wx.getStorage({
+      key: history,
+      success: function(r) {
+        //r.data.push(db._id)
+        r.data.unshift(id)
+        r.data = Array.from(new Set(r.data))
+        if (r.data.length > 100) {
+          r.data = r.data.slice(0, 100)
+        }
+        wx.setStorage({
+          key: history,
+          data: r.data,
+        })
+      },
+      fail: function() {
+        wx.setStorage({
+          key: history,
+          data: [id],
+        })
+      }
+    })
+  },
   saveContent(db) {
     if (db.Type != 2) return
     db.time = parseInt(+new Date() / 1000);
@@ -162,7 +259,6 @@ App({
       key: db._id,
       data: db,
       success: function() {
-
         wx.getStorage({
           key: history,
           success: function(r) {
@@ -194,7 +290,7 @@ App({
   },
   getSearchKey(w) {
     let word = new Set(w.toLowerCase().split(/[^\dA-Za-z\u3007\u3400-\u4DB5\u4E00-\u9FCB\uE815-\uE864]/g))
-    console.log(word)
+    //console.log(word)
     for (let x of word) {
       if (x.length <= 1) {
         word.delete(x)
@@ -211,27 +307,39 @@ App({
         }
       }
     }
-
-    return this.objToArray(word)
+    //console.log(word)
+    return Array.from(word)
+    // return this.objToArray(word)
   },
-  objToArray(map) {
-    if (map.length === 0) return;
-    let resstr = [];
-    for (let w of map) {
-      resstr.push(w)
-    }
-    resstr.sort(function(obj1, obj2) {
-      var val1 = obj1.length;
-      var val2 = obj2.length;
-      if (val1 > val2) {
-        return -1;
-      } else if (val1 < val2) {
-        return 1;
-      } else {
-        return 0;
-      }
+  reqWords(w, hand) {
+    //console.log(w)
+    let that = this
+    this.getUserInfo(function(info) {
+      console.log(info)
+      that.db.collection(info.config.collword).where({
+        _id: that.db.command.in(w)
+      }).get({
+        success: function(res) {
+          let Idmap = new Map()
+          res.data.forEach(function(k) {
+            let sum = 1 / k.link.length + k._id.length;
+            k.link.forEach(function(l, i) {
+              Idmap.set(l, ((Idmap.get(l) || 0) + (i / k.link.length) + sum))
+            })
+          })
+          var arrayObj = Array.from(Idmap);
+          arrayObj.sort(function(a, b) {
+            return b[1] - a[1]
+          })
+          //console.log(arrayObj)
+          let list = []
+          arrayObj.forEach(function(value) {
+            list.push(value[0])
+          })
+          hand(list)
+        },
+      })
     })
-    return resstr
   },
   getCityWeather(province, city, district, handweatcher) {
     let that = this
@@ -361,5 +469,171 @@ App({
         //wx.reLaunch({ url: "/pages/search/search" })
       }
     })
-  }
+  },
+  clipboardData: function () {
+    let that = this
+    wx.getClipboardData({
+      success(res) {
+        if (!res.data) {
+          //that.globalData.clipboard=''
+          return;
+        }
+        if (that.clipboard && that.clipboard === res.data) return;
+        that.clipboard = res.data;
+        that.handKeyWords(res.data,
+          that.showModeToPage
+        )
+        return
+      }
+    })
+  },
+  onShow() {
+    let that = this
+    //this.getUserInfo(function(info){    
+    let k = setInterval(
+      function () {
+        that.clipboardData()
+        clearInterval(k)
+      }, 3000)
+    //})  
+  },
+  getGoodsData(py, id, hand, fail) {
+    let that = this
+    if (that.globalData.goodsdb && that.globalData.goodsdb.Id == id) {
+      //console.log("find")
+      hand(that.globalData.goodsdb)
+      return
+    }
+    wx.showLoading({
+      title: '请稍等',
+    })
+    wx.request({
+      url: 'https://www.zaddone.com/site/goodsid/' + py,
+      data: { goodsid: id },
+      success: function (res) {
+        if (res.statusCode != 200 || !res.data || res.data.length === 0) {
+          wx.showToast({
+            title: '没有找到',
+            icon: 'none'
+          })
+          return;
+        }
+        let db = res.data[0]
+        that.globalData.goodsdb = db;
+        hand(db)
+      },
+      fail: fail,
+      complete: function () {
+        wx.hideLoading();
+      }
+    })
+  },
+  getShoppings: function (hand) {
+    if (this.globalData.shoppings) {
+      hand(this.globalData.shoppings)
+      return;
+    }
+    let that = this
+    wx.request({
+      url: "https://www.zaddone.com/site/",
+      data: { content_type: "json" },
+      success: function (res) {
+        //console.log(res)
+        let shopping = []
+        //let other
+        res.data.forEach(function (v, i) {
+          if (v.py === 'taobao') {
+            v.template = '_taobao'
+          } else {
+            v.template = ''
+          }
+          v.title = v.Name
+          shopping.push(v)
+        })
+        //shopping.push(other)
+        that.globalData.shoppings = shopping;
+        hand(that.globalData.shoppings)
+      },
+      fail: function () {
+        wx.navigateBack({})
+      },
+    })
+  },
+  showModeToPage(py, id) {
+    this.getGoodsData(py, id, function (db) {
+      let title = '找到商品'
+      if (db.Fprice) {
+        title = "￥" + db.Price + '返' + db.Fprice
+      }
+      wx.showModal({
+        title: title,
+        content: db.Name,
+        success(res) {
+          if (res.confirm) {
+            console.log(py, id)
+            //wx.navigateTo({
+            //let tem = py==='taobao'?'_taobao':''
+            wx.reLaunch({
+              url: '/pages/view/view' + (py === 'taobao' ? '_taobao' : '') + '?show=true&py=' + py + '&goods=' + id,
+            })
+            //console.log('用户点击确定')
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }, function () {
+      wx.showToast({
+        title: '没有找到',
+        duration: 5000,
+      })
+    })
+  },
+  handKeyWords(data, handhttp) {
+    let that = this;
+    let val = /(http[\S]+)[\+| ]?/.exec(data)
+    if (!val) {
+      return
+    }
+    var url = val[1];
+    wx.request({
+      url: 'https://www.zaddone.com/site/goodsurl',
+      data: { url: url },
+      success: function (res) {
+        console.log(res)
+        if (!res.data.db || res.data.db.length == 0) {
+          data = data.replace(url, "")
+          if (data.length === 0) {
+            wx.showToast({
+              title: '没有找到优惠信息',
+              icon: 'none',
+              duration: 5000,
+            })
+            return;
+          }
+          wx.showModal({
+            title: '没有找到优惠信息',
+            content: data,
+            confirmText: '再试一试',
+            success: function (_res) {
+              if (!_res.confirm) return
+              that.getShoppings(function (shoppings) {
+                for (let i in shoppings) {
+                  if (shoppings[i].py === res.data.py) {
+                    wx.reLaunch({
+                      url: '/pages/index/list?q=' + data + '&tab=' + i,
+                    })
+                    return
+                  }
+                }
+              })
+            }
+          })
+          return;
+        }
+        that.globalData.goodsdb = res.data.db[0];
+        handhttp(res.data.py, res.data.db[0].Id)
+      },
+    })
+  },
 })
